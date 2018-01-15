@@ -1,0 +1,177 @@
+//Name:  Jeff Chery     Z#: 15351733
+//Course: Foundations of Computer Science (COP3014)
+//Professor: Dr. Lofton Bullard
+//Due Date:  9/25/2016                    Due Time: 2330
+//Total Points: 100
+//Assignment : unit 6
+
+/*Description: This assignment will implement a program named Call_stats, it will have 3 functions; input, output, process.
+The program will read a file with phone numbers and a relay number and the amount of time talked on the phone and
+then calculate the net cost, tax rate, call tax and total cost then print it all on the screen */
+
+
+//*************************************************************************************************************************/
+
+
+#include <iostream>
+#include <string>
+#include <fstream> 
+using namespace std;
+
+
+class call_record
+{
+public:
+    string cell_number;
+    int relays;
+    int call_length;
+    double net_cost;
+    double tax_rate;
+    double call_tax;
+    double total_cost;
+};
+
+
+void Input(ifstream &, call_record &);
+void Output(const call_record &);
+void Process(const call_record &);
+void outprint(ofstream &, const call_record &);
+
+///*************************************************************************************
+//Name:  Input
+//Precondition: The file call_data has not been access before the implementation of this function.
+//Postcondition: The file call_data has not been access and store into  customer record.
+//Description: Get the values of cell_number, relays, and call_length from the user and store them in call record.
+/*PURPOSE: the values are call by reference (&) into customer record the purpose of
+the function input is to minimize the use of codes and since its values are called by reference
+it can be use multiple times in the program*/
+
+//*************************************************************************************
+
+void Input(ifstream & in, call_record & customer_record)
+{
+
+    in >> customer_record.cell_number;
+    in >> customer_record.relays;
+    in >> customer_record.call_length;
+}
+
+///*************************************************************************************
+//Name:  Output
+//Precondition: before output is access nothing will be shown on the screem.
+//Postcondition: Once ouput execute it will show all of the data as it was program to on the screen.
+//Description:  this function purpose is to print the data on the screen.
+//*************************************************************************************
+
+
+void Output(const call_record & customer_record)
+{
+
+    cout << "Phone Number: " << customer_record.cell_number << " ";
+    cout << "Relay Stations: " << customer_record.relays << " ";
+    cout << "Call Length: " << customer_record.call_length << endl;
+    cout << "Net Cost: " << customer_record.net_cost << endl;
+    cout << "Tax Rate: " << customer_record.tax_rate << endl;
+    cout << "Call Tax: " << customer_record.call_tax << endl;
+    cout << "Total Cost: " << customer_record.total_cost << endl;
+
+}
+
+///*************************************************************************************
+//Name:  Process
+//Precondition: before this function is access it will their will be no calculation done for the function output to execute.
+//Postcondition: once this function has been execute, several calculation with be done and sore in different location on customer record.
+//Description:  this function purspose is to calculate some math according to certain condition and to store those calculation in customer record.
+//*************************************************************************************
+
+void Process(call_record & customer_record)
+{
+
+    customer_record.net_cost = customer_record.relays / 50.0 * 0.4 * customer_record.call_length;
+
+
+    if (customer_record.relays <= 1 && customer_record.relays <= 5)
+
+    {
+        customer_record.tax_rate = 0.01;
+
+    }
+
+    else if (customer_record.relays >= 6 && customer_record.tax_rate <= 11)
+    {
+        customer_record.tax_rate = 0.03;
+    }
+
+    else if (customer_record.relays >= 12 && customer_record.tax_rate <= 20)
+    {
+        customer_record.tax_rate = 0.05;
+    }
+
+    else if (customer_record.relays >= 21 && customer_record.tax_rate <= 50)
+    {
+        customer_record.tax_rate = 0.08;
+    }
+
+    else if (customer_record.relays >= 50)
+    {
+        customer_record.tax_rate = 0.12;
+    }
+
+    customer_record.call_tax = customer_record.net_cost * customer_record.tax_rate;
+    customer_record.total_cost = customer_record.net_cost + customer_record.call_tax;
+
+}
+
+
+void outprint(ofstream &out, const call_record & customer_record)
+{
+
+
+    out << "Phone Number: " << customer_record.cell_number << " ";
+    out << "Relay Stations: " << customer_record.relays << " ";
+    out << "Call Length: " << customer_record.call_length << endl;
+    out << "Net Cost: " << customer_record.net_cost << endl;
+    out << "Tax Rate: " << customer_record.tax_rate << endl;
+    out << "Call Tax: " << customer_record.call_tax << endl;
+    out << "Total Cost: " << customer_record.total_cost << endl;
+
+
+}
+
+
+
+
+int main()
+{
+    cout.setf(ios::showpoint);
+    cout.precision(2);
+    cout.setf(ios::fixed);
+
+    call_record customer_record;
+
+    ifstream in;
+    in.open("call_data.txt");
+
+    ofstream out;
+    out.open("weekly_call_info.txt");
+
+    if (in.fail())
+    {
+        cout << "Input file did not open correctly" << endl;
+    }
+    else
+    {
+        while (!in.eof())
+        {
+            Input(in, customer_record);
+            Process(customer_record);
+            Output(customer_record);
+            outprint(out, customer_record);
+
+        }
+    }
+
+    in.close();
+
+    return 0;
+}
